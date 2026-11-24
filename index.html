@@ -1,1 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>午餐吃什麼？</title>
 
+  <style>
+    : * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      color: #172033;
+      background:
+        radial-gradient(circle at top left, #ffe8b7 0, transparent 35%),
+        radial-gradient(circle at bottom right, #bce6ff 0, transparent 38%),
+        #f7f9fc;
+    }
+
+    .container {
+      width: min(92%, 680px);
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .card {
+      padding: clamp(24px, 5vw, 40px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 18px 50px rgba(62, 81, 116, 0.14);
+      backdrop-filter: blur(12px);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: clamp(28px, 7vw, 40px);
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      text-align: center;
+      color: #718096;
+    }
+
+    .result {
+      min-height: 120px;
+      margin-bottom: 24px;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      border: 2px dashed #d7dde8;
+      border-radius: 20px;
+      background: #f9fbff;
+      text-align: center;
+    }
+
+    .result-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #718096;
+      font-size: 14px;
+    }
+
+    #resultText {
+      color: #2f67d8;
+      font-size: clamp(26px, 8vw, 38px);
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .add-area {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      min-width: 0;
+      flex: 1;
+      padding: 14px 16px;
+      border: 2px solid #e2e7ef;
+      border-radius: 12px;
+      outline: none;
+      font-size: 16px;
+      background: white;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #6593ed;
+      box-shadow: 0 0 0 4px rgba(101, 147, 237, 0.12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #addButton {
+      padding: 14px 18px;
+      color: white;
+      background: #5a86df;
+    }
+
+    #addButton:hover {
+      background: #4775d1;
+    }
+
+    .draw-button {
+      width: 100%;
+      padding: 18px;
+      color: white;
+      background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+      box-shadow: 0 10px 24px rgba(255, 107, 107, 0.28);
+      font-size: 20px;
+    }
+
+    .draw-button:hover {
+      box-shadow: 0 12px 28px rgba(255, 107, 107, 0.38);
+    }
+
+    .list-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 24px 0 12px;
+    }
+
+    .list-title h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    #count {
+      color: #718096;
+      font-size: 14px;
+    }
+
+    #restaurantList {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #restaurantList li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+      padding: 12px 12px 12px 16px;
+      border: 1px solid #edf0f5;
+      border-radius: 12px;
+      background: #fff;
+      animation: appear 0.25s ease-out;
+    }
+
+    .remove-button {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      color: #e45858;
+      background: #fff1f1;
+      font-size: 18px;
+    }
+
+    .remove-button:hover {
+      background: #ffe2e2;
+    }
+
+    .empty-text {
+      padding: 18px;
+      color: #98a2b3;
+      text-align: center;
+      background: transparent !important;
+      border: 1px dashed #dfe4ec !important;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: 94%;
+        padding: 20px 0;
+      }
+
+      .card {
+        border-radius: 18px;
+      }
+
+      .add-area {
+        flex-direction: column;
+      }
+
+      #addButton {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>🍱 午餐吃什麼？</h1>
+      <p class="subtitle">輸入餐廳，讓今天的午餐交給命運吧！</p>
+
+      <div class="result" aria-live="polite">
+        <div>
+          <span class="result-label">今日推薦</span>
+          <span id="resultText">還沒抽籤</span>
+        </div>
+      </div>
+
+      <div class="add-area">
+        <input
+          id="restaurantInput"
+          type="text"
+          placeholder="例如：麥當勞、滷肉飯..."
+          maxlength="30"
+        >
+        <button id="addButton" type="button">＋ 新增餐廳</button>
+      </div>
+
+      <button id="drawButton" class="draw-button" type="button">
+        🎲 隨機抽籤
+      </button>
+
+      <div class="list-title">
+        <h2>餐廳選項</h2>
+        <span id="count">共 0 家</span>
+      </div>
+
+      <ul id="restaurantList"></ul>
+    </section>
+  </main>
+
+  <script>
+    const defaultRestaurants = [
+      "滷肉飯",
+      "牛肉麵",
+      "便當",
+      "義大利麵",
+      "鹹酥雞",
+      "壽司"
+    ];
+
+    let restaurants = [];
+
+    const savedRestaurants = localStorage.getItem("lunchRestaurants");
+    if (savedRestaurants) {
+      try {
+        restaurants = JSON.parse(savedRestaurants);
+      } catch (error) {
+        restaurants = [...defaultRestaurants];
+      }
+    } else {
+      restaurants = [...defaultRestaurants];
+    }
+
+    const input = document.getElementById("restaurantInput");
+    const addButton = document.getElementById("addButton");
+    const drawButton = document.getElementById("drawButton");
+    const restaurantList = document.getElementById("restaurantList");
+    const resultText = document.getElementById("resultText");
+    const count = document.getElementById("count");
+
+    function saveRestaurants() {
+      localStorage.setItem(
+        "lunchRestaurants",
+        JSON.stringify(restaurants)
+      );
+    }
+
+    function renderRestaurants() {
+      restaurantList.innerHTML = "";
+
+      if (restaurants.length === 0) {
+        restaurantList.innerHTML =
+          '<li class="empty-text">目前沒有餐廳，請先新增選項</li>';
+      } else {
+        restaurants.forEach((restaurant, index) => {
+          const li = document.createElement("li");
+
+          const name = document.createElement("span");
+          name.textContent = restaurant;
+
+          const removeButton = document.createElement("button");
+          removeButton.type = "button";
+          removeButton.className = "remove-button";
+          removeButton.textContent = "✕";
+          removeButton.setAttribute(
+            "aria-label",
+            "刪除 " + restaurant
+          );
+
+          removeButton.addEventListener("click", function () {
+            restaurants.splice(index, 1);
+            saveRestaurants();
+            renderRestaurants();
+          });
+
+          li.appendChild(name);
+          li.appendChild(removeButton);
+          restaurantList.appendChild(li);
+        });
+      }
+
+      count.textContent = "共 " + restaurants.length + " 家";
+    }
+
+    function addRestaurant() {
+      const restaurantName = input.value.trim();
+
+      if (restaurantName === "") {
+        alert("請輸入餐廳名稱！");
+        input.focus();
+        return;
+      }
+
+      if (restaurants.includes(restaurantName)) {
+        alert("這家餐廳已經在清單裡了！");
+        input.select();
+        return;
+      }
+
+      restaurants.push(restaurantName);
+      saveRestaurants();
+      renderRestaurants();
+
+      input.value = "";
+      input.focus();
+    }
+
+    function drawRestaurant() {
+      if (restaurants.length === 0) {
+        resultText.textContent = "請先新增餐廳";
+        return;
+      }
+
+      drawButton.disabled = true;
+      let countAnimation = 0;
+
+      const animation = setInterval(function () {
+        const randomIndex = Math.floor(
+          Math.random() * restaurants.length
+        );
+        resultText.textContent = restaurants[randomIndex];
+        countAnimation++;
+
+        if (countAnimation >= 12) {
+          clearInterval(animation);
+
+          const finalIndex = Math.floor(
+            Math.random() * restaurants.length
+          );
+          resultText.textContent = "🎉 " + restaurants[finalIndex];
+          drawButton.disabled = false;
+        }
+      }, 80);
+    }
+
+    addButton.addEventListener("click", addRestaurant);
+
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        addRestaurant();
+      }
+    });
+
+    drawButton.addEventListener("click", drawRestaurant);
+
+    renderRestaurants();
+  </script>
+</body>
+</html>
